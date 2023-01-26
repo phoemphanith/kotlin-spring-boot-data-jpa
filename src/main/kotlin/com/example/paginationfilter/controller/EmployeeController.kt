@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api")
 class EmployeeController(private val repository: EmployeeRepository) {
+    // Basic Select Statement
     @GetMapping("/employees")
     fun getFirstNameLastName(
         @RequestParam(defaultValue = "10") size: Int,
