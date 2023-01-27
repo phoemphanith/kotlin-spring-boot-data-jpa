@@ -195,4 +195,50 @@ class EmployeeController(private val repository: EmployeeRepository) {
         } catch (e: Exception){
             ResponseEntity(mapOf("message" to e.message), HttpStatus.INTERNAL_SERVER_ERROR)
         }
+
+    @GetMapping("/employees/salary")
+    fun getEmployeeBetweenSalary(
+        @RequestParam(defaultValue = "0") minSalary: Double?,
+        @RequestParam(defaultValue = "0") maxSalary: Double?
+    ): ResponseEntity<Map<String, Any?>> =
+        try {
+            val employees: List<Employee>  =
+                if(minSalary!! > 0 && maxSalary!! > 0)
+                    repository.findBySalaryBetween(minSalary, maxSalary)
+                else
+                    repository.findAll()
+
+            ResponseEntity(mapOf("employees" to employees), HttpStatus.OK)
+        } catch (e: Exception){
+            ResponseEntity(mapOf("message" to e.message), HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+
+    @GetMapping("/employees/department")
+    fun getEmployeeDepartment(
+        @RequestParam(defaultValue = "") departmentIds: String?
+    ): ResponseEntity<Map<String, Any?>> =
+        try {
+            val ids: List<Double>? = departmentIds?.split(",")?.map { item -> item.toDouble() }
+            val employee = ids?.let { repository.findByDepartmentIdIn(it) }
+            ResponseEntity(mapOf("response" to employee), HttpStatus.OK)
+        }catch (e :Exception){
+            ResponseEntity(mapOf("message" to e.message), HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+
+    @GetMapping("/employees/salary-department")
+    fun getEmployeeSalaryDepartmentId(): ResponseEntity<Map<String, Any?>> =
+        try {
+            val employee = repository
+                .getEmployeeSalaryNotBetweenAndDepartmentIdNotIn(
+                    10000.0,
+                    15000.0,
+                    listOf(30.0, 100.0),
+                    PageRequest.of(0, 5)
+                )
+
+            ResponseEntity(mapOf("response" to employee), HttpStatus.OK)
+        }catch (e: Exception){
+            ResponseEntity(mapOf("message" to e.message), HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+
 }
