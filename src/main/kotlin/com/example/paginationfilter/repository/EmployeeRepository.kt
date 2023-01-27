@@ -69,11 +69,33 @@ interface EmployeeRepository: JpaRepository<Employee, Long> {
     @Query(nativeQuery = true)
     fun findMaxMinSumAvgEmployee(): EmployeeSalaryRecord
     @Query(nativeQuery = true)
-    fun countEmployeeEachJob(): List<EmployeeCountEachJob>
+    fun countEmployeeEachJob(salary: Double): List<EmployeeCountEachJob>
     @Query("select max(e.salary) - min(e.salary) difference from Employee e")
     fun findSalaryBetweenLowAndHigh(): Double
     @Query(nativeQuery = true)
     fun findMinSalaryOfManager(): List<EmployeeManagerSalary>
     @Query(nativeQuery = true)
     fun findPayableEachDepartment(): List<EmployeeDepartmentSalary>
+    // MySQL Sub-Query
+    @Query("select e from Employee e where e.salary > (select e1.salary from Employee e1 where e1.lastName = 'Bull')")
+    fun findEmployeeSalaryHigherBull(): List<Employee>
+    @Query("select e from Employee e where e.departmentId in (select d.departmentId from Department d where d.departmentName = ?1)")
+    fun findEmployeeByDepartmentName(departmentName: String): List<Employee>
+    @Query("""
+        select e1 from Employee e1 where e1.managerId in 
+        (select e2.employeeId from Employee e2 where e2.departmentId in 
+        (select d.departmentId from Department d where d.locationId in 
+        (select l.locationId from Location l where l.countryId = ?1 )))
+    """)
+    fun findEmployeeByCountry(country: String): List<Employee>
+    @Query("select e1 from Employee e1 where e1.employeeId in (select e2.managerId from Employee e2)")
+    fun findManagerEmployee(pageable: Pageable): Page<Employee>
+    @Query("select e1 from Employee e1 where e1.salary > (select avg(e2.salary) from Employee e2)")
+    fun findEmployeeSalaryGreaterThanAvg(): List<Employee>
+    @Query("select e1 from Employee e1 where e1.salary = (select j.minSalary from Job j where e1.jobId = j.jobId)")
+    fun findEmployeeEqualJobMinSalary(): List<Employee>
+    @Query("select e1 from Employee e1 where e1.salary > " +
+            "(select avg(e2.salary) from Employee e2) " +
+            "and e1.departmentId in (select d.departmentId from Department d where d.departmentName = ?1)")
+    fun findEmployeeSalaryGreaterThanAvg(departmentName: String): List<Employee>
 }

@@ -33,7 +33,7 @@ import java.time.LocalDate
     //Query to get the number of employees with the same job
     NamedNativeQuery(
         name = "Employee.countEmployeeEachJob",
-        query = "select e.job_id as job_id, count(*) as total_employee, max(e.salary) as max_salary from employees e group by e.job_id having max(e.salary) >= 12000",
+        query = "select e.job_id as job_id, count(*) as total_employee, max(e.salary) as max_salary from employees e group by e.job_id having max(e.salary) >= ?1",
         resultSetMapping = "Mapping.EmployeeCountEachJob"
     ),
     // Query to find the manager ID and the salary of the lowest-paid employee for that manager

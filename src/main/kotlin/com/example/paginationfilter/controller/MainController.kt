@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDate
 
@@ -38,12 +39,28 @@ class MainController (private val repository: EmployeeRepository){
 //            val response = repository.findMaxSalaryByJobId("IT_PROG")
 //            val response = repository.findAvgSalaryByDepartmentId(90)
 //            val response = repository.findMaxMinSumAvgEmployee()
-            val response = repository.countEmployeeEachJob()
+//            val response = repository.countEmployeeEachJob(12000)
 //            val response = repository.findSalaryBetweenLowAndHigh()
 //            val response = repository.findMinSalaryOfManager()
-//            val response = repository.findPayableEachDepartment()
+            val response = repository.findPayableEachDepartment()
             ResponseEntity(mapOf("response" to response), HttpStatus.OK)
         }catch (e: Exception){
+            ResponseEntity(mapOf("message" to e.message), HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+
+    //MySQL Subquery
+    @GetMapping("/msql-subquery")
+    fun indexThree(): ResponseEntity<Map<String, Any?>> =
+        try {
+//            val response = repository.findEmployeeSalaryHigherBull()
+//            val response = repository.findEmployeeByDepartmentName("IT")
+//            val response = repository.findEmployeeByCountry("US and")
+//            val response = repository.findManagerEmployee(PageRequest.of(0, 5))
+//            val  response = repository.findEmployeeSalaryGreaterThanAvg()
+//            val response = repository.findEmployeeEqualJobMinSalary()
+            val response = repository.findEmployeeSalaryGreaterThanAvg("IT")
+            ResponseEntity(mapOf("response" to response), HttpStatus.OK)
+        } catch (e: Exception){
             ResponseEntity(mapOf("message" to e.message), HttpStatus.INTERNAL_SERVER_ERROR)
         }
 }
